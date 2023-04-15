@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login/Register App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+    </nav>
+    <div id="app">
+        <div class="auth-container">
+            <h1>Login</h1>
+            <form id="login-form">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" required>
+
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required>
+
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const API_URL = "http://localhost:8000";
+        const LOGIN_URL = `${API_URL}/login`;
+
+        async function fetchUserInfo() {
+            const jwt = Cookies.get("access_token");
+            const response = await fetch(USER_ME_URL, {
+                method: "GET",
+                credentials: 'include',
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(`Welcome, ${data.name}!`);
+            } else {
+                alert("Failed to fetch user info.");
+            }
+        }
+
+        //document.getElementById("get-user-info").addEventListener("click", fetchUserInfo);
+
+        document.getElementById("login-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const username = document.getElementById("login-username").value;
+            const password = document.getElementById("login-password").value;
+            //Svar tokenz = Cookies.get('csrftoken');
+            const response = await fetch(LOGIN_URL, {
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("access_token", data.access_token);
+                alert("Login successful!");
+            } else {
+                alert("Login failed!");
+            }
+        });
+
+        function logout() {
+            if (localStorage.getItem("access_token")) {
+                localStorage.clear(); 
+                alert("Logged out.");
+            }   
+            else{
+                alert("You're not logged in!");
+            }
+        }
+
+        document.getElementById("logout").addEventListener("click", logout);  
+    </script>
+</body>
+</html>

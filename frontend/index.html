@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Detection</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      
+      h1 {
+        text-align: center;
+      }
+      
+      #image-upload, #response {
+        margin: 50px auto;
+        width: 80%;
+      }
+      
+      #image-upload input[type=file], #execute-button {
+        display: block;
+        margin: 20px auto;
+      }
+      
+      #response form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 10px;
+      }
+      
+      #response label {
+        text-align: right;
+      }
+      
+      #response input {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+        </ul>
+    </nav>
+    <h1>Text Detection</h1>
+    <div id="image-upload">
+      <h2>Upload an Image</h2>
+      <input type="file" id="image-input" accept="image/*">
+      <button id="execute-button">Execute</button>
+    </div>
+    <div id="response">
+      <h2>Response</h2>
+      <form>
+        <label for="nik">NIK:</label>
+        <input type="text" id="nik" readonly>
+        <label for="nama">Nama:</label>
+        <input type="text" id="nama" readonly>
+        <label for="ttl">TTL:</label>
+        <input type="text" id="ttl" readonly>
+        <label for="alamat">Alamat:</label>
+        <input type="text" id="alamat" readonly>
+        <label for="rt_rw">RT/RW:</label>
+        <input type="text" id="rt_rw" readonly>
+        <label for="kelurahan">Kelurahan:</label>
+        <input type="text" id="kelurahan" readonly>
+        <label for="kecamatan">Kecamatan:</label>
+        <input type="text" id="kecamatan" readonly>
+        <label for="kotakab">Kota/Kabupaten:</label>
+        <input type="text" id="kotakab" readonly>
+        <label for="provinsi">Provinsi:</label>
+        <input type="text" id="provinsi" readonly>
+        <label for="agama">Agama:</label>
+        <input type="text" id="agama" readonly>
+      </form>
+    </div>
+    <script>
+        const API_URL = "http://localhost:8000";
+        const CSRF_URL = `${API_URL}/csrftoken`;
+
+        function callCSRF() {
+            fetch(CSRF_URL, {
+                method: "GET",
+                credentials: 'include'
+            })
+        }
+
+        callCSRF();
+
+        const imageInput = document.getElementById('image-input');
+        const executeButton = document.getElementById('execute-button');
+        const nikInput = document.getElementById('nik');
+        const namaInput = document.getElementById('nama');
+        const ttlInput = document.getElementById('ttl');
+        const alamatInput = document.getElementById('alamat');
+        const rt_rwInput = document.getElementById('rt_rw');
+        const kelurahanInput = document.getElementById('kelurahan');
+        const kecamatanInput = document.getElementById('kecamatan');
+        const kotakabInput = document.getElementById('kotakab');
+        const provinsiInput = document.getElementById('provinsi');
+        const agamaInput = document.getElementById('agama');
+
+        executeButton.addEventListener('click', async () => {
+        if (!imageInput.files.length) {
+            alert('Please select an image file');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', imageInput.files[0]);
+
+        try {
+            const response = await fetch('http://localhost:8000/text-detection', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {"Authorization": `Bearer ${localStorage.getItem("access_token")}`},
+            body: formData,
+            });
+            const data = await response.json();
+
+            nikInput.value = data.nik;
+            namaInput.value = data.nama;
+            ttlInput.value = data.ttl;
+            alamatInput.value = data.alamat;
+            rt_rwInput.value = data.rt_rw;
+            kelurahanInput.value = data.kelurahan;
+            kecamatanInput.value = data.kecamatan;
+            kotakabInput.value = data.kotakab;
+            provinsiInput.value = data.provinsi;
+            agamaInput.value = data.agama;
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred, please try again later');
+        }
+        });
+    </script>
+  </body>
+</html>
