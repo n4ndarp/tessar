@@ -1,7 +1,14 @@
 celery==5.1.2
-fastapi==0.92.0
 flower==1.2.0
+fastapi[all]
+uvicorn
+fastapi_csrf_protect==0.2.2
+pandas==1.5.3
 passlib==1.7.4
-protobuf==4.22.0
+protobuf==4.22.3
 pydantic==1.10.4
 PyJWT==2.6.0
+regex==2023.3.23
+google-cloud-vision
+google-cloud-storage
+python-multipart
